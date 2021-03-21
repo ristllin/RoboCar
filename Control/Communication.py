@@ -1,6 +1,7 @@
 from Control.Constants import *
 import socket
 from requests import get,post
+import json
 
 class ComAgent:
     def __init__(self):
@@ -12,7 +13,7 @@ class ComAgent:
 
     def send(self,message):
         if DEBUG: print("sending",message)
-        self.connection.sendall(message.encode())
+        self.connection.sendall(json.dumps(message).encode())
 
     def publishAddress(self):
         addr = {"local_ip" : self.local_addr, "public_ip" : self.public_addr ,"port" : str(COMPORT)}
@@ -49,4 +50,5 @@ class ComAgent:
         self.connection = conn
 
     def terminate(self):
+        self.send('terminate')
         self.com_socket.close()
