@@ -1,6 +1,7 @@
 import socket
 from requests import get,post
 from Car.Constants import *
+from Car.MovementControl import move
 import json
 from time import sleep
 
@@ -25,11 +26,14 @@ def connect_to_control(connection_details):
                 sleep(10)
                 continue
             while True:
-                data = s.recv(1024)
-                print('Received', repr(data))
-                if '"terminate"' == data.decode() or '' == data.decode():
+                raw_data = s.recv(1024).decode()
+                data = json.loads(raw_data)
+                print('Received', repr(raw_data))
+                if '"terminate"' == raw_data or '' == raw_data:
                     s.close()
                     break
+                else:
+                    move(data["speed"],data["acc"],data["action"])
 
 def main():
     connection_details = resolveIP()
